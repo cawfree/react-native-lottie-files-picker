@@ -14,51 +14,37 @@ import InfiniteFlatList from '@foundcareers/react-native-infinite-flatlist';
 
 import LottieFilesCrawler from 'crawl-lottie-files';
 
-class ViewportAwareLottie extends React.Component {
+export class ViewportAware extends React.Component {
   constructor(nextProps) {
     super(nextProps);
     this.state = {
       visible: false,
-      source: null,
     };
-    this.wrapper = null;
+    this.viewRef = null;
     this.interval = null;
+    this.__onLayout = this.__onLayout.bind(this);
+    this.__onViewRef = this.__onViewRef.bind(this);
   }
   componentDidMount() {
-    const {
-      url,
-    } = this.props;
-    const {
-      visible,
-    } = this.state;
     this.interval = this.__getViewportInterval();
-    if (visible && url) {
-      this.__cacheUrl(url)
-        .catch((e) => {
-          // TODO: handle this error
-          Alert.alert('err');
-        });
-    }
-  }
-  componentWillUnmount() {
-    this.clearInterval(
-      this.interval,
-    );
   }
   __isWithin(viewport, top, bottom, left, right, lookAhead) {
-    // TODO: Depends on REAL_WINDOW_HEIGHT for Android. (Use react-native-extra-dimensions.)
+    // TODO: <View/>'s will not appear if visible within the region of the soft navigation bar on Android.
+    //       We should be using react-native-extra-dimensions, or pass the parent height into this scope.
     return (top >= (-1 * lookAhead)) && (bottom <= (viewport.height + lookAhead));
   }        
   __getViewportInterval() {
     const {
       lookAhead,
+      onChange,
+      viewport,
     } = this.props;
     return this.setInterval(
       () => {
-        if (!!this.wrapper) {
-          this.wrapper.measure((x, y, width, height, pageX, pageY) => {
+        if (!!this.viewRef) {
+          this.viewRef.measure((x, y, width, height, pageX, pageY) => {
             const visible = this.__isWithin(
-              Dimensions.get('window'),
+              viewport,
               pageY,
               pageY + height,
               pageX,
@@ -70,6 +56,7 @@ class ViewportAwareLottie extends React.Component {
                 {
                   visible,
                 },
+                () => onChange(visible),
               );
             }
           });
@@ -78,6 +65,84 @@ class ViewportAwareLottie extends React.Component {
       100,
     );
   }
+  componentWillUnmount() {
+    this.clearInterval(
+      this.interval,
+    );
+  }
+  __onLayout(e) {
+    // XXX: This is a hack to ensure Android triggers layout changes.
+  }
+  __onViewRef(e) {
+    this.viewRef = e;
+  }
+  render() {
+    const {
+      width,
+      height,
+      children,
+    } = this.props;
+    const hackProps = (Platform.OS === 'android') ? ({
+       removeClippedSubviews: false,
+       collapsable: false,
+       renderToHardwareTextureAndroid: true,
+     }) : ({});
+    return (
+      <View
+        ref={this.__onViewRef}
+        {...hackProps}
+        style={{
+          width,
+          height,
+          borderWidth: 1,
+          opacity: 1,
+        }}
+        onLayout={this.__onLayout}
+      >
+        {children}
+      </View>
+    );
+  }
+}
+
+Object.assign(
+  ViewportAware.prototype,
+  require('react-timer-mixin'),
+);
+
+ViewportAware.propTypes = {
+  lookAhead: PropTypes.number.isRequired,
+  viewport: PropTypes.shape({}).isRequired,
+};
+
+ViewportAware.defaultProps = {
+  lookAhead: Dimensions.get('window').height * 0.5,
+};
+
+export class ViewportAwareLottie extends React.Component {
+  constructor(nextProps) {
+    super(nextProps);
+    this.state = {
+      visible: false,
+      source: null,
+    };
+    this.interval = null;
+  }
+  componentDidMount() {
+    const {
+      url,
+    } = this.props;
+    const {
+      visible,
+    } = this.state;
+    if (visible && url) {
+      this.__cacheUrl(url)
+        .catch((e) => {
+          // TODO: handle this error
+          Alert.alert('err');
+        });
+    }
+  } 
   componentWillUpdate(nextProps, nextState) {
     const {
       url,
@@ -123,29 +188,16 @@ class ViewportAwareLottie extends React.Component {
     const {
       width,
       height,
+      viewport,
     } = this.props;
     const {
       source,
       visible,
     } = this.state;
-     const hackProps = (Platform.OS === 'android') ? ({
-       removeClippedSubviews: false,
-       collapsable: false,
-       renderToHardwareTextureAndroid: true,
-     }) : ({});
     return (
-      <View
-        ref={el => this.wrapper = el}
-        {...hackProps}
-        style={{
-          width,
-          height,
-          borderWidth: 1,
-          opacity: 1,
-        }}
-        onLayout={(e) => {
-          
-        }}
+      <ViewportAware
+        viewport={viewport}
+        onChange={(visible) => this.setState({ visible })}
       >
         {(!!source) && (
           <Animation
@@ -168,24 +220,18 @@ class ViewportAwareLottie extends React.Component {
             }}
           />
         )}
-      </View>
+      </ViewportAware>
     );
   }
 }
 
-Object.assign(
-  ViewportAwareLottie.prototype,
-  require('react-timer-mixin'),
-);
-
 ViewportAwareLottie.propTypes = {
   style: PropTypes.shape({}),
   url: PropTypes.string.isRequired,
-  lookAhead: PropTypes.number,
+  onChange: PropTypes.func.isRequired,
 };
 
 ViewportAwareLottie.defaultProps = {
-  lookAhead: Dimensions.get('window').height * 0.5,
 };
 
 class LottieFilesPicker extends React.Component {
@@ -321,6 +367,10 @@ class LottieFilesPicker extends React.Component {
       <ViewportAwareLottie
         width={width}
         height={width}
+        viewport={{
+          width,
+          height,
+        }}
         url={url}
       />
     );
