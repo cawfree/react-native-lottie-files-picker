@@ -1,0 +1,46 @@
+{
+  "name": "react-native-lottie-files-picker",
+  "version": "1.0.0",
+  "description": "A React Native List that supports the selection of beautiful Lottie Animations sourced by Lottie Files.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cawfree/react-native-lottie-files-picker.git"
+  },
+  "keywords": [
+    "lottie",
+    "react-native",
+    "files",
+    "lottiefiles",
+    "animation",
+    "animations",
+    "picker",
+    "selector",
+    "list",
+    "scroll"
+  ],
+  "author": "Alexander Thomas (@cawfree)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Cawfree/react-native-lottie-files-picker/issues"
+  },
+  "homepage": "https://github.com/Cawfree/react-native-lottie-files-picker#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "babel-plugin-transform-es2015-destructuring": "^6.23.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "jest": "^24.7.1"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.4.4",
+    "@foundcareers/react-native-infinite-flatlist": "^2.1.0",
+    "axios": "^0.18.0",
+    "crawl-lottie-files": "^1.0.5",
+    "react-timer-mixin": "^0.13.4"
+  }
+}
