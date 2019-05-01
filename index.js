@@ -414,6 +414,9 @@ class LottieFilesPicker extends React.Component {
   }
   __renderItem({ item }) {
     const {
+      onSelect,
+    } = this.props;
+    const {
       width,
       height,
       items,
@@ -452,19 +455,23 @@ class LottieFilesPicker extends React.Component {
           shadowRadius: MARGIN_EXTRA_SHORT,
           borderRadius: MARGIN_STANDARD,
           overflow: 'hidden',
-          //paddingHorizontal: MARGIN_SHORT,
         }}
       >
-        <ViewportAwareLottie
-          width={scaledWidth}
-          height={scaledHeight}
-          viewport={{
-            width: scaledWidth,
-            height: scaledHeight,
-          }}
-          url={url}
-        />
-        <View
+        <TouchableOpacity
+          onPress={() => onSelect(item)}
+        >
+          <ViewportAwareLottie
+            width={scaledWidth}
+            height={scaledHeight}
+            viewport={{
+              width: scaledWidth,
+              height: scaledHeight,
+            }}
+            url={url}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => goToArtist(href)}
           style={{
             width: scaledWidth,
             paddingHorizontal: MARGIN_SHORT,
@@ -490,11 +497,11 @@ class LottieFilesPicker extends React.Component {
               }}
             />
           </View>
-          <TouchableOpacity
-            onPress={() => goToArtist(href)}
+          <View
             style={{
-              marginLeft: MARGIN_SHORT,
-              paddingVertical: MARGIN_EXTRA_SHORT,
+              marginLeft: MARGIN_EXTRA_SHORT,
+              paddingTop: MARGIN_EXTRA_SHORT,
+              paddingBottom: MARGIN_SHORT,
               flex: 1,
               flexDirection: 'column',
             }}
@@ -540,15 +547,14 @@ class LottieFilesPicker extends React.Component {
                 {user || 'An awesome arist!'}
               </Text>
             </View>
-          </TouchableOpacity>
-        </View>
+          </View>
+        </TouchableOpacity>
       </View>
     );
   }
   render() {
     const {
       style,
-      onError,
     } = this.props;
     const {
       items,
@@ -643,13 +649,15 @@ const styles = StyleSheet.create({
   },
 });
 
+// TODO: onError
 LottieFilesPicker.propTypes = {
   mode: PropTypes.string,
-  onError: PropTypes.func.isRequired,
+  onSelect: PropTypes.func,
 };
 
 LottieFilesPicker.defaultProps = {
   mode: 'recent',
+  onSelect: item => Alert.alert(JSON.stringify(item)),
 };
 
 export default LottieFilesPicker;
