@@ -8,6 +8,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Text,
+  Linking,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import Animation from 'lottie-react-native';
@@ -16,12 +17,34 @@ import InfiniteFlatList from '@foundcareers/react-native-infinite-flatlist';
 
 import LottieFilesCrawler from 'crawl-lottie-files';
 
+const goToUrl = (url) => {
+  return Promise.resolve()
+    .then(() => {
+      return Linking.canOpenURL(url)
+        .then((isSupported) => {
+          if (isSupported) {
+            return Linking.openURL(
+              url,
+            );
+          }
+          return Promise.reject(
+            new Error(
+              `Failed to open url "${url}"`,
+            ),
+          );
+        })
+    });
+};
+
+export const goToLottieFiles = () => goToUrl('https://lottiefiles.com');
+export const goToArtist = slug => goToUrl(`https://lottiefiles.com${slug}`);
+
 const MARGIN_STANDARD = 15;
 const MARGIN_SHORT = 10;
 const MARGIN_EXTRA_SHORT = 5;
 
 const DIM_INFO_BAR = 60;
-const DIM_THUMBNAIL = 55;
+const DIM_THUMBNAIL = 50;
 const DIM_TOP_BAR = 80;
 const DIM_LOGO_HEIGHT = DIM_TOP_BAR * 0.6;
 
@@ -402,6 +425,7 @@ class LottieFilesPicker extends React.Component {
       width: lottieWidth,
       height: lottieHeight,
       //path: url,
+      href,
       text: user,
       title,
     } = item;
@@ -466,7 +490,8 @@ class LottieFilesPicker extends React.Component {
               }}
             />
           </View>
-          <View
+          <TouchableOpacity
+            onPress={() => goToArtist(href)}
             style={{
               marginLeft: MARGIN_SHORT,
               paddingVertical: MARGIN_EXTRA_SHORT,
@@ -486,7 +511,7 @@ class LottieFilesPicker extends React.Component {
                 style={{
                   marginRight: MARGIN_SHORT,
                   width: scaledWidth - (DIM_INFO_BAR + (4 * MARGIN_SHORT)),
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: 'bold',
                 }}
                 ellipsizeMode="tail"
@@ -515,7 +540,7 @@ class LottieFilesPicker extends React.Component {
                 {user || 'An awesome arist!'}
               </Text>
             </View>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -545,7 +570,8 @@ class LottieFilesPicker extends React.Component {
             backgroundColor: COLOR_LOTTIE_FILES,
           }}
         >
-          <View
+          <TouchableOpacity
+            onPress={goToLottieFiles}
             style={{
               width: DIM_TOP_BAR,
               height: DIM_TOP_BAR,
@@ -561,7 +587,7 @@ class LottieFilesPicker extends React.Component {
                 uri: getLottieFilesLogo(),
               }}
             />
-          </View>
+          </TouchableOpacity>
           <View
             style={{
               width: width - DIM_TOP_BAR,
