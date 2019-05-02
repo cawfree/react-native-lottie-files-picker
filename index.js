@@ -180,8 +180,7 @@ export class ViewportAwareLottie extends React.Component {
     if (visible && url) {
       this.__cacheUrl(url)
         .catch((e) => {
-          // TODO: handle this error
-          Alert.alert('err');
+          // TODO: Elevate to caller.
         });
     }
   } 
@@ -199,8 +198,7 @@ export class ViewportAwareLottie extends React.Component {
     if ((urlDidChange && visible) || (visibilityDidChange && visible && url)) {
       this.__cacheUrl(url)
         .catch((e) => {
-          Alert.alert('err');
-          // TODO: handle this error
+          // TODO: Elevate to caller.
         });
     }
     if (visibilityDidChange && !visible && source) {
@@ -385,7 +383,6 @@ class LottieFilesPicker extends React.Component {
                 },
               )
               .then((results) => {
-                Alert.alert('for '+page+' got '+results[0].path);
                 this.setState(
                   {
                     refreshing: false,

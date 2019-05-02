@@ -1,6 +1,6 @@
 {
   "name": "@cawfree/react-native-lottie-files-picker",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A React Native List that supports the selection of beautiful Lottie Animations sourced by Lottie Files.",
   "main": "index.js",
   "scripts": {
