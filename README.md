@@ -2,7 +2,7 @@
 A React Native List that supports the selection of beautiful Lottie Animations sourced by Lottie Files.
 
 <p align="center">
-  <img src="https://github.com/Cawfree/react-native-lottie-files-picker/blob/master/raw/anim.gif?raw=true" alt="sofia" width="300" height="600">
+  <img src="./raw/anim.gif" alt="react-native-lottie-files-picker" width="300" height="600">
 </p>
 
 ## 🚀 Installing
