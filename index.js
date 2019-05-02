@@ -40,7 +40,7 @@ const goToUrl = (url) => {
 };
 
 export const goToLottieFiles = () => goToUrl('https://lottiefiles.com');
-export const goToArtist = slug => goToUrl(`https://lottiefiles.com${slug}`);
+const goToArtist = slug => goToUrl(`https://lottiefiles.com${slug}`);
 
 const MARGIN_STANDARD = 15;
 const MARGIN_SHORT = 10;
@@ -191,6 +191,7 @@ export class ViewportAwareLottie extends React.Component {
     const {
       visible,
       source,
+      mode,
     } = nextState;
     const urlDidChange = url && (url !== this.props.url);
     const visibilityDidChange = (visible !== this.state.visible);
@@ -292,6 +293,7 @@ class LottieFilesPicker extends React.Component {
     this.state = {
       lottieFilesCrawler: null,
       items: [],
+      mode: 'recent',
       page: 1,
       refreshing: false,
       width: null,
@@ -306,14 +308,20 @@ class LottieFilesPicker extends React.Component {
       .then(() => {
         const {
           lottieFilesCrawler,
+          mode,
+          page,
         } = this.state;
+        this.__fetchAnimations(
+          mode,
+          page,
+        );
       });
   }
   componentWillUpdate(nextProps, nextState) {
     const {
       mode,
-    } = nextProps;
-    if (nextProps.mode !== this.props.mode) {
+    } = nextState;
+    if (mode !== this.state.mode) {
       this.__handleModeChange(
         nextProps,
         nextState,
@@ -400,6 +408,7 @@ class LottieFilesPicker extends React.Component {
         page: 1,
         items: [],
       },
+      () => this.__fetchAnimations(nextState.mode, 1),
     );
   } 
   __getScaledDimensions(maxWidth, width, height) {
@@ -552,10 +561,19 @@ class LottieFilesPicker extends React.Component {
       </View>
     );
   }
-  __renderPopoverItem(title, name, width, height, onPress) {
+  __renderPopoverItem(title, mode, name, width, height, closePopover) {
+    const {
+      mode: selectedMode,
+    } = this.state;
+    const color = (selectedMode === mode) ? COLOR_LOTTIE_FILES : undefined;
     return (
       <TouchableOpacity
-        onPress={onPress}
+        onPress={() => this.setState(
+          {
+            mode,
+          },
+          closePopover,
+        )}
       >
         <View
           style={{
@@ -574,6 +592,7 @@ class LottieFilesPicker extends React.Component {
             }}
           >
             <Icon
+              color={color}
               name={name}
               size={22}
             />
@@ -587,6 +606,7 @@ class LottieFilesPicker extends React.Component {
           >
             <Text
               style={{
+                color,
                 fontSize: 22,
               }}
             >
@@ -652,7 +672,9 @@ class LottieFilesPicker extends React.Component {
                 <React.Fragment>
                   <TouchableOpacity
                     ref={setPopoverAnchor}
-                    onPress={openPopover}
+                    onPress={() => {
+                      openPopover();
+                    }}
                   >
                     <Icon
                       name="cog"
@@ -668,10 +690,10 @@ class LottieFilesPicker extends React.Component {
                   >
                     <View
                     >
-                      {this.__renderPopoverItem('Recent', 'calendar', 145, 40)}
-                      {this.__renderPopoverItem('Featured', 'trophy', 145, 40)}
-                      {this.__renderPopoverItem('Popular', 'fire', 145, 40)}
-                      {this.__renderPopoverItem('Search', 'search', 145, 40)}
+                      {this.__renderPopoverItem('Recent', 'recent', 'calendar', 145, 40, closePopover)}
+                      {this.__renderPopoverItem('Featured', 'featured', 'trophy', 145, 40, closePopover)}
+                      {this.__renderPopoverItem('Popular', 'popular', 'fire', 145, 40, closePopover)}
+                      {this.__renderPopoverItem('Search', 'search', 'search', 145, 40, closePopover)}
                     </View>
                   </Popover>
                 </React.Fragment>
@@ -727,12 +749,10 @@ const styles = StyleSheet.create({
 
 // TODO: onError
 LottieFilesPicker.propTypes = {
-  mode: PropTypes.string,
   onSelect: PropTypes.func,
 };
 
 LottieFilesPicker.defaultProps = {
-  mode: 'recent',
   onSelect: item => Alert.alert(JSON.stringify(item)),
 };
 
