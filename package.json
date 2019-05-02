@@ -1,5 +1,5 @@
 {
-  "name": "react-native-lottie-files-picker",
+  "name": "@cawfree/react-native-lottie-files-picker",
   "version": "1.0.0",
   "description": "A React Native List that supports the selection of beautiful Lottie Animations sourced by Lottie Files.",
   "main": "index.js",
@@ -34,15 +34,16 @@
     "@babel/preset-env": "^7.4.4",
     "babel-plugin-transform-es2015-destructuring": "^6.23.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "jest": "^24.7.1"
+    "jest": "^24.7.1",
+    "lottie-react-native": "^2.6.1",
+    "react-native-vector-icons": "^6.4.2",
+    "axios": "^0.18.0"
   },
   "dependencies": {
     "@babel/polyfill": "^7.4.4",
     "@foundcareers/react-native-infinite-flatlist": "^2.1.0",
-    "axios": "^0.18.0",
-    "crawl-lottie-files": "^1.0.5",
+    "crawl-lottie-files": "^1.0.6",
     "react-native-modal-popover": "0.0.12",
-    "react-native-vector-icons": "^6.4.2",
     "react-timer-mixin": "^0.13.4"
   }
 }

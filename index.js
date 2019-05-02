@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   // TODO: remove this
+  Animated,
   Image,
   Platform,
   Dimensions,
@@ -308,7 +309,7 @@ class LottieFilesPicker extends React.Component {
     this.state = {
       lottieFilesCrawler: null,
       items: [],
-      mode: 'recent',
+      mode: 'popular',
       page: 1,
       refreshing: false,
       width: null,
@@ -341,7 +342,7 @@ class LottieFilesPicker extends React.Component {
       this.__handleModeChange(
         nextProps,
         nextState,
-      );
+      ); 
     } else if (page !== this.state.page) {
       this.__handlePageChange(
         nextProps,
@@ -384,6 +385,7 @@ class LottieFilesPicker extends React.Component {
                 },
               )
               .then((results) => {
+                Alert.alert('for '+page+' got '+results[0].path);
                 this.setState(
                   {
                     refreshing: false,
@@ -460,7 +462,7 @@ class LottieFilesPicker extends React.Component {
       src: uri,
       width: lottieWidth,
       height: lottieHeight,
-      //path: url,
+      path: url,
       href,
       text: user,
       title,
@@ -473,7 +475,7 @@ class LottieFilesPicker extends React.Component {
       Number.parseInt(lottieWidth),
       Number.parseInt(lottieHeight),
     );
-    const url = 'https://assets9.lottiefiles.com/datafiles/sPJTLSWjrBGgvJK/data.json';
+    //const url = 'https://assets9.lottiefiles.com/datafiles/sPJTLSWjrBGgvJK/data.json';
     return (
       <View
         elevation={1.5}
@@ -718,22 +720,32 @@ class LottieFilesPicker extends React.Component {
                       {this.__renderPopoverItem('Recent', 'recent', 'calendar', 145, 40, closePopover)}
                       {this.__renderPopoverItem('Featured', 'featured', 'trophy', 145, 40, closePopover)}
                       {this.__renderPopoverItem('Popular', 'popular', 'fire', 145, 40, closePopover)}
-                      {this.__renderPopoverItem('Search', 'search', 'search', 145, 40, closePopover)}
                     </View>
                   </Popover>
                 </React.Fragment>
               )}
             </PopoverController>
+
+
           </View>
         </View>
         <InfiniteFlatList
+          keyExtractor={item => item.path}
           ListHeaderComponent={
-            () => (<View
-              style={{
-                width,
-                height: MARGIN_STANDARD,
-              }}
-            />)
+            () => (
+              <View
+                style={{
+                  width,
+                }}
+              >
+                <View
+                  style={{
+                    width,
+                    height: MARGIN_STANDARD,
+                  }}
+                />
+              </View>
+            )
           }
           ItemSeparatorComponent={
             () => (<View
@@ -757,7 +769,25 @@ class LottieFilesPicker extends React.Component {
           renderItem={this.__renderItem}
           loading={refreshing}
           refreshing={refreshing}
-          onRefresh={this.__fetchAnimations}
+          onRefresh={() => {
+            const shouldForceRefresh = (page === 1);
+            this.setState(
+              {
+                items: [],
+                mode,
+                page: 1,
+              },
+              () => {
+                if (shouldForceRefresh) {
+                  return this.__fetchAnimations(
+                    mode,
+                    1,
+                  );
+                }
+                return Promise.resolve();
+              },
+            );
+          }}
           onEndReached={() => {
             this.setState({
               mode,
@@ -770,6 +800,9 @@ class LottieFilesPicker extends React.Component {
     );
   }
 }
+
+// TODO: Implement search!
+//{this.__renderPopoverItem('Search', 'search', 'search', 145, 40, closePopover)}
 
 const styles = StyleSheet.create({
   container: {
