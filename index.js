@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  // TODO: remove this
   Image,
   Platform,
   Dimensions,
@@ -13,6 +14,8 @@ import {
 import PropTypes from 'prop-types';
 import Animation from 'lottie-react-native';
 import axios from 'axios';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { Popover, PopoverController } from 'react-native-modal-popover';
 import InfiniteFlatList from '@foundcareers/react-native-infinite-flatlist';
 
 import LottieFilesCrawler from 'crawl-lottie-files';
@@ -243,7 +246,6 @@ export class ViewportAwareLottie extends React.Component {
           style={{
             width,
             height,
-            backgroundColor: 'red',
             overflow: 'hidden',
             alignItems: 'center',
             justifyContent: 'center',
@@ -291,7 +293,6 @@ class LottieFilesPicker extends React.Component {
       lottieFilesCrawler: null,
       items: [],
       page: 1,
-      forceRefresh: false,
       refreshing: false,
       width: null,
       height: null,
@@ -420,7 +421,6 @@ class LottieFilesPicker extends React.Component {
       width,
       height,
       items,
-      forceRefresh,
     } = this.state;
     const resolvedWidth = width - (2 * MARGIN_STANDARD);
     const {
@@ -552,6 +552,51 @@ class LottieFilesPicker extends React.Component {
       </View>
     );
   }
+  __renderPopoverItem(title, name, width, height, onPress) {
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+      >
+        <View
+          style={{
+            width,
+            height,
+            flexDirection: 'row',
+          }}
+        >
+          <View
+            style={{
+              width: height,
+              height,
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: MARGIN_SHORT,
+            }}
+          >
+            <Icon
+              name={name}
+              size={22}
+            />
+          </View>
+          <View
+            style={{
+              width: width - height,
+              height,
+              justifyContent: 'center',
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 22,
+              }}
+            >
+              {title}
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  }
   render() {
     const {
       style,
@@ -560,7 +605,6 @@ class LottieFilesPicker extends React.Component {
       items,
       refreshing,
       page,
-      forceRefresh,
       width,
     } = this.state;
     return (
@@ -598,8 +642,41 @@ class LottieFilesPicker extends React.Component {
             style={{
               width: width - DIM_TOP_BAR,
               height: DIM_TOP_BAR,
+              paddingRight: MARGIN_SHORT,
+              alignItems: 'flex-end',
+              justifyContent: 'center',
             }}
           >
+            <PopoverController>
+              {({ openPopover, closePopover, popoverVisible, setPopoverAnchor, popoverAnchorRect }) => (
+                <React.Fragment>
+                  <TouchableOpacity
+                    ref={setPopoverAnchor}
+                    onPress={openPopover}
+                  >
+                    <Icon
+                      name="cog"
+                      size={32}
+                      color="#FFFFFFFF"
+                    />
+                  </TouchableOpacity>
+                  <Popover 
+                    visible={popoverVisible}
+                    onClose={closePopover}
+                    fromRect={popoverAnchorRect}
+                    supportedOrientations={['portrait', 'landscape']}
+                  >
+                    <View
+                    >
+                      {this.__renderPopoverItem('Recent', 'calendar', 145, 40)}
+                      {this.__renderPopoverItem('Featured', 'trophy', 145, 40)}
+                      {this.__renderPopoverItem('Popular', 'fire', 145, 40)}
+                      {this.__renderPopoverItem('Search', 'search', 145, 40)}
+                    </View>
+                  </Popover>
+                </React.Fragment>
+              )}
+            </PopoverController>
           </View>
         </View>
         <InfiniteFlatList
@@ -627,7 +704,6 @@ class LottieFilesPicker extends React.Component {
              }}
             />)
           }
-          extraData={forceRefresh}
           style={{
           }}
           data={items}
