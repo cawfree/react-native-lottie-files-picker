@@ -253,17 +253,32 @@ export class ViewportAwareLottie extends React.Component {
           }}
         >
           {(!!source) && (
-            <Animation
-              style={{
-                // XXX: These are made as a simplistic way to help
-                //      the Lottie animation fill the view.
-                width: width * 1.3,
-                height: height * 1.3,
-              }}
-              source={source}
-              loop
-              autoPlay
-            />
+            <React.Fragment>
+              <Animation
+                style={{
+                  // XXX: These are made as a simplistic way to help
+                  //      the Lottie animation fill the view.
+                  width: width * 1.3,
+                  height: height * 1.3,
+                }}
+                source={source}
+                loop
+                autoPlay
+              />
+              <View
+                style={{
+                  position: 'absolute',
+                  top: MARGIN_SHORT,
+                  right: MARGIN_SHORT,
+                }}
+              >
+                <Icon
+                  color="#EEEEEECC"
+                  name="sign-out"
+                  size={25}
+                />
+              </View>
+            </React.Fragment>
           )}
           {(!source) && (
             <View
@@ -749,7 +764,7 @@ class LottieFilesPicker extends React.Component {
               page: page + 1,
             });
           }}
-          emptyText="No Items"
+          emptyText={mode === 'search' ? 'No Items': ''}
         />
       </View>
     );
