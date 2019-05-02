@@ -320,9 +320,15 @@ class LottieFilesPicker extends React.Component {
   componentWillUpdate(nextProps, nextState) {
     const {
       mode,
+      page,
     } = nextState;
     if (mode !== this.state.mode) {
       this.__handleModeChange(
+        nextProps,
+        nextState,
+      );
+    } else if (page !== this.state.page) {
+      this.__handlePageChange(
         nextProps,
         nextState,
       );
@@ -411,6 +417,9 @@ class LottieFilesPicker extends React.Component {
       () => this.__fetchAnimations(nextState.mode, 1),
     );
   } 
+  __handlePageChange(nextProps, nextState) {
+    return this.__fetchAnimations(nextState.mode, nextState.page);
+  }
   __getScaledDimensions(maxWidth, width, height) {
     return {
       width: maxWidth,
@@ -626,6 +635,7 @@ class LottieFilesPicker extends React.Component {
       refreshing,
       page,
       width,
+      mode,
     } = this.state;
     return (
       <View
@@ -733,7 +743,12 @@ class LottieFilesPicker extends React.Component {
           loading={refreshing}
           refreshing={refreshing}
           onRefresh={this.__fetchAnimations}
-          onEndReached={this.__fetchAnimations}
+          onEndReached={() => {
+            this.setState({
+              mode,
+              page: page + 1,
+            });
+          }}
           emptyText="No Items"
         />
       </View>
