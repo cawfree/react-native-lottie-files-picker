@@ -43,7 +43,6 @@
     "@babel/polyfill": "^7.4.4",
     "@foundcareers/react-native-infinite-flatlist": "^2.1.0",
     "crawl-lottie-files": "^1.0.6",
-    "react-native-modal-popover": "0.0.12",
     "react-timer-mixin": "^0.13.4"
   }
 }
