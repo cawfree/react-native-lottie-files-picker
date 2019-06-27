@@ -73,6 +73,7 @@ export class ViewportAware extends React.Component {
     this.interval = null;
     this.__onLayout = this.__onLayout.bind(this);
     this.__onViewRef = this.__onViewRef.bind(this);
+    this.__onSelect = this.__onSelect.bind(this);
   }
   componentDidMount() {
     this.interval = this.__getViewportInterval();
@@ -415,6 +416,12 @@ class LottieFilesPicker extends React.Component {
       () => this.__fetchAnimations(nextState.mode, 1),
     );
   } 
+  __onSelect(item) {
+    const { onSelect } = this.props;
+    if (onSelect) {
+      onSelect(item);
+    }
+  }
   __handlePageChange(nextProps, nextState) {
     return this.__fetchAnimations(nextState.mode, nextState.page);
   }
@@ -453,16 +460,20 @@ class LottieFilesPicker extends React.Component {
       Number.parseInt(lottieHeight || resolvedWidth),
     );
     const RenderLottieFile = ({ ...extraProps }) => (
-      <ViewportAwareLottie
-        width={scaledWidth}
-        height={scaledHeight}
-        viewport={{
-          width: scaledWidth,
-          height: scaledHeight,
-        }}
-        url={url}
-        {...extraProps}
-      />
+      <TouchableOpacity
+        onPress={() => this.__onSelect(item)}
+      >
+        <ViewportAwareLottie
+          width={scaledWidth}
+          height={scaledHeight}
+          viewport={{
+            width: scaledWidth,
+            height: scaledHeight,
+          }}
+          url={url}
+          {...extraProps}
+        />
+      </TouchableOpacity>
     );
     return renderLottieFile(
       RenderLottieFile,
