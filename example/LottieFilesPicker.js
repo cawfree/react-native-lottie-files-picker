@@ -73,7 +73,6 @@ export class ViewportAware extends React.Component {
     this.interval = null;
     this.__onLayout = this.__onLayout.bind(this);
     this.__onViewRef = this.__onViewRef.bind(this);
-    this.__onSelect = this.__onSelect.bind(this);
   }
   componentDidMount() {
     this.interval = this.__getViewportInterval();
@@ -298,6 +297,7 @@ class LottieFilesPicker extends React.Component {
       width: null,
       height: null,
     };
+    this.__onSelect = this.__onSelect.bind(this);
     this.__renderItem = this.__renderItem.bind(this);
     this.__onLayout = this.__onLayout.bind(this);
     this.__fetchAnimations = this.__fetchAnimations.bind(this);
